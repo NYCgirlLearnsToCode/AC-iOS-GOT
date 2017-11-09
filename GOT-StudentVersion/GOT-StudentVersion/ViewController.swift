@@ -10,7 +10,6 @@ import UIKit
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     var episodeArr = [GOTEpisode]()
-    // var alleps = AllEp
     @IBOutlet weak var tableView: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,7 +44,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             let cell = tableView.dequeueReusableCell(withIdentifier:"Episode Cell2", for: indexPath)
             if let cell = cell as? RightAlignedTableViewCell {
                 cell.titleLabel2.text = episodeArr.filter{$0.season == indexPath.section + 1}[indexPath.row].name
-                print(cell.titleLabel2.text)
+                print(cell.titleLabel2.text!)
                 cell.descriptionLabel2.text = "S:" + "\(episodeArr.filter{$0.season == indexPath.section + 1}[indexPath.row].season) " + "E:" + "\(episodeArr.filter{$0.season == indexPath.section + 1}[indexPath.row].number)"
                 
                 cell.episode2ImageView.image = UIImage(named: episodeArr.filter{$0.season == indexPath.section + 1}[indexPath.row].mediumImageID)
@@ -55,12 +54,30 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         return UITableViewCell()
     }
-            func numberOfSections(in tableView: UITableView) -> Int {
-                return 7
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 7
+    }
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "Season \(section + 1)"
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let cellClickedOn = sender as? UITableViewCell {
+            let season = (tableView.indexPath(for: cellClickedOn)?.section)! + 1
+            let row = (tableView.indexPath(for: cellClickedOn)?.row)!
+            //get the new view controller using segue.destination
+            if segue.identifier == "detailSegue" {
+                if let destination = segue.destination as? EpisodeDetailViewController{
+                    destination.episode = episodeArr.filter{$0.season == season}[row]
+                }
+                
+            }else{
+                print("not working")
             }
-            func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-                return "Season \(section + 1)"
-            }
+            
+            
+        }
+        
+    }
     
 }
 
